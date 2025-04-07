@@ -6,7 +6,7 @@ import numpy as np
 from typing import List, Dict, Optional, Tuple
 import json
 import cv2
-from segment_anything import sam_hq_model_registry, SamPredictor
+from segment_anything import sam_model_registry, SamPredictor
 import io
 from PIL import Image
 
@@ -71,7 +71,7 @@ def initialize_model(model_type: str = MODEL_TYPE, checkpoint_path: Optional[str
     if not os.path.exists(checkpoint_path):
         raise HTTPException(status_code=404, detail=f"Model checkpoint not found at {checkpoint_path}")
     
-    model = sam_hq_model_registry[model_type](checkpoint=checkpoint_path)
+    model = sam_model_registry[model_type](checkpoint=checkpoint_path)
     model.to(device="cuda" if torch.cuda.is_available() else "cpu")
     predictor = SamPredictor(model)
 
