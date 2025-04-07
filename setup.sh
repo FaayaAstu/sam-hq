@@ -9,6 +9,7 @@ fi
 # Create necessary directories
 echo "Creating necessary directories..."
 mkdir -p supervisely_integration/serve/models
+mkdir -p supervisely_integration/serve/weights
 
 # Step 1: Install PyTorch and dependencies
 echo "Installing PyTorch and dependencies..."
@@ -51,6 +52,7 @@ echo "Setup completed successfully!"
 echo ""
 echo "To start the FastAPI server:"
 echo "1. cd supervisely_integration/serve"
-echo "2. python -m uvicorn main:app --reload"
+echo "2. python -m uvicorn src.sam_hq_api:app --reload"
 echo ""
-echo "The server will be available at: http://localhost:8000" 
+echo "The server will be available at: http://localhost:8000"
+echo "API documentation will be available at: http://localhost:8000/docs" 
