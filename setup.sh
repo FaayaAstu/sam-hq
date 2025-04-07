@@ -6,7 +6,14 @@ if [ ! -f "setup.py" ]; then
     exit 1
 fi
 
-# Step 1: Install core SAM-HQ package
+# Step 1: Install PyTorch and dependencies
+echo "Installing PyTorch and dependencies..."
+pip install torch==2.4.1 torchvision==0.19.1 || {
+    echo "Error: Failed to install PyTorch and dependencies"
+    exit 1
+}
+
+# Step 2: Install core SAM-HQ package
 echo "Installing core SAM-HQ package..."
 pip install -e . || {
     echo "Error: Failed to install SAM-HQ package"
@@ -20,7 +27,7 @@ python -c "import segment_anything" || {
     exit 1
 }
 
-# Step 2: Install FastAPI application
+# Step 3: Install FastAPI application
 echo "Setting up FastAPI application..."
 cd supervisely_integration || {
     echo "Error: Failed to change to supervisely_integration directory"
