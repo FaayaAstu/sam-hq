@@ -13,6 +13,13 @@ pip install -e . || {
     exit 1
 }
 
+# Verify the package is installed
+echo "Verifying SAM-HQ installation..."
+python -c "import segment_anything" || {
+    echo "Error: SAM-HQ package is not properly installed"
+    exit 1
+}
+
 # Step 2: Install FastAPI application
 echo "Setting up FastAPI application..."
 cd supervisely_integration || {
@@ -21,7 +28,7 @@ cd supervisely_integration || {
 }
 
 # Run the Python setup script
-python setup_app.py || {
+PYTHONPATH=$PYTHONPATH:.. python setup_app.py || {
     echo "Error: Failed to setup FastAPI application"
     exit 1
 }
