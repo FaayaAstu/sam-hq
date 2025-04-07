@@ -6,6 +6,10 @@ if [ ! -f "setup.py" ]; then
     exit 1
 fi
 
+# Create necessary directories
+echo "Creating necessary directories..."
+mkdir -p supervisely_integration/serve/models
+
 # Step 1: Install PyTorch and dependencies
 echo "Installing PyTorch and dependencies..."
 pip install torch==2.4.1 torchvision==0.19.1 || {

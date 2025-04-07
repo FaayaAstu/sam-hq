@@ -6,7 +6,7 @@ from tqdm import tqdm
 from typing import List, Dict, Optional
 
 class ModelDownloader:
-    def __init__(self, model_data_path: str = "models/model_data.json", weights_dir: str = "models"):
+    def __init__(self, model_data_path: str = "serve/models/model_data.json", weights_dir: str = "models"):
         self.model_data_path = Path(model_data_path)
         self.weights_dir = Path(weights_dir)
         self.weights_dir.mkdir(exist_ok=True)
