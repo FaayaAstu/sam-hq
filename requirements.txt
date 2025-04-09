@@ -1,4 +1,8 @@
-# basic requirements
+# Specify the find-links option for PyTorch wheels
+-f https://download.pytorch.org/whl/torch_stable.html
+
+# PyTorch and TorchVision with CUDA 12.1 support
+--index-url https://download.pytorch.org/whl/cu121
 torch==2.4.1
 torchvision==0.19.1
 xformers==0.0.28.post1
