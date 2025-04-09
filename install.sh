@@ -3,6 +3,8 @@ apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+
 pip install -r requirements.txt
 
 pip install -e .
