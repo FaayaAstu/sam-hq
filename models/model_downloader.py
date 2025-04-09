@@ -35,19 +35,20 @@ class ModelDownloader:
                 size = f.write(data)
                 pbar.update(size)
 
-    def get_model_path(self, model_name: str) -> Path:
-        """Get the path where a model should be saved."""
-        model_name = model_name.lower().replace(" ", "_").replace("-", "_")
-        return self.weights_dir / f"{model_name}.pth"
+    def get_model_path(self, url: str) -> Path:
+        """Get the path where a model should be saved based on the download URL."""
+        filename = Path(url).name
+        return self.weights_dir / filename
 
     def download_model(self, model_info: Dict) -> Path:
         """Download a specific model."""
-        model_path = self.get_model_path(model_info["Model"])
+        url = model_info["weights_link"]
+        model_path = self.get_model_path(url)
         
         if not model_path.exists():
             print(f"Downloading {model_info['Model']} ({model_info['Size']})...")
             print(f"Parameters: {model_info['Number of parameters']}, AP: {model_info['AP']}, FPS: {model_info['FPS']}")
-            self.download_file(model_info["weights_link"], model_path)
+            self.download_file(url, model_path)
         else:
             print(f"Model {model_info['Model']} already exists, skipping...")
         
@@ -71,8 +72,12 @@ class ModelDownloader:
 
     def is_model_downloaded(self, model_name: str) -> bool:
         """Check if a model is already downloaded."""
-        model_path = self.get_model_path(model_name)
-        return model_path.exists()
+        model_info = self.get_model_info(model_name)
+        if model_info:
+            url = model_info["weights_link"]
+            model_path = self.get_model_path(url)
+            return model_path.exists()
+        return False
 
 if __name__ == "__main__":
     downloader = ModelDownloader()
