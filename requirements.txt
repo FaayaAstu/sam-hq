@@ -10,6 +10,7 @@ transformers>=4.28.1
 safetensors>=0.3.0
 aiohttp
 pyyaml
+numpy
 Pillow
 scipy
 tqdm
@@ -25,3 +26,4 @@ matplotlib
 onnxruntime
 onnx
 timm
+requests
