@@ -6,7 +6,7 @@ from tqdm import tqdm
 from typing import List, Dict, Optional
 
 class ModelDownloader:
-    def __init__(self, model_data_path: str = "model_data.json", weights_dir: str = "models"):
+    def __init__(self, model_data_path: str = "models/model_data.json", weights_dir: str = "pretrained_checkpoint"):
         self.model_data_path = Path(model_data_path)
         self.weights_dir = Path(weights_dir)
         self.weights_dir.mkdir(exist_ok=True)
@@ -72,4 +72,8 @@ class ModelDownloader:
     def is_model_downloaded(self, model_name: str) -> bool:
         """Check if a model is already downloaded."""
         model_path = self.get_model_path(model_name)
-        return model_path.exists() 
+        return model_path.exists()
+
+if __name__ == "__main__":
+    downloader = ModelDownloader()
+    downloader.download_all_models()

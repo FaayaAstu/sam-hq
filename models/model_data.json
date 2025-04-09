@@ -30,5 +30,13 @@
         "AP": "49.9",
         "FPS": "3.4",
         "weights_link": "https://huggingface.co/lkeab/hq-sam/resolve/main/sam_hq_vit_h.pth"
+    },
+    {
+        "Model": "ViT-L SAM Baseline",
+        "Number of parameters": "N/A",
+        "Size": "1.1GB",
+        "AP": "N/A",
+        "FPS": "N/A",
+        "weights_link": "https://dl.fbaipublicfiles.com/segment_anything/sam_vit_l_0b3195.pth"
     }
 ]
