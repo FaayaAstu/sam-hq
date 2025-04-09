@@ -12,12 +12,11 @@ then
 fi
 
 # --- Initialize pyenv for this script session ---
-# Ensures pyenv shims and functions are available for pyenv shell to work
 echo "Initializing pyenv for the script..."
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d "$PYENV_ROOT/bin" ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)" # Needed for virtualenv awareness
+eval "$(pyenv init --path)"
+eval "$(pyenv virtualenv-init -)"
 
 # --- Install System Dependencies ---
 # Needed for pyenv Python builds and some package dependencies
@@ -40,6 +39,8 @@ else
 fi
 
 echo "Checking for pyenv virtual environment '${ENV_NAME}'..."
+# Construct the expected path to the virtual environment
+VENV_PATH="$PYENV_ROOT/versions/${ENV_NAME}" # pyenv virtualenvs live directly under versions now
 if ! pyenv virtualenvs --bare | grep -q "^${ENV_NAME}$"; then
     echo "Creating pyenv virtual environment '${ENV_NAME}' using Python ${PYTHON_VERSION}..."
     pyenv virtualenv ${PYTHON_VERSION} ${ENV_NAME}
@@ -47,9 +48,23 @@ else
     echo "Virtual environment '${ENV_NAME}' already exists."
 fi
 
-# --- Activate Environment using pyenv shell ---
-echo "Setting pyenv shell to '${ENV_NAME}' for subsequent commands..."
-pyenv shell ${ENV_NAME}
+ACTIVATE_SCRIPT="${VENV_PATH}/bin/activate"
+if [[ -f "$ACTIVATE_SCRIPT" ]]; then
+    echo "Activating environment '${ENV_NAME}' by sourcing ${ACTIVATE_SCRIPT}..."
+    source "${ACTIVATE_SCRIPT}"
+else
+    echo "Error: Activation script not found at ${ACTIVATE_SCRIPT}"
+    # Attempt to find the correct path in case the structure changed slightly
+    ALT_VENV_PATH=$(pyenv prefix ${ENV_NAME})
+    ALT_ACTIVATE_SCRIPT="${ALT_VENV_PATH}/bin/activate"
+    if [[ -f "$ALT_ACTIVATE_SCRIPT" ]]; then
+         echo "Found activation script at alternate path: ${ALT_ACTIVATE_SCRIPT}. Sourcing..."
+         source "${ALT_ACTIVATE_SCRIPT}"
+    else
+        echo "Error: Could not find activation script at standard or alternate path."
+        exit 1
+    fi
+fi
 
 echo "Installing dependencies from requirements.txt (including PyTorch/GPU libraries)..."
 python -m pip install -r requirements.txt
@@ -63,6 +78,15 @@ mkdir -p pretrained_checkpoint
 echo "Downloading models using downloader script..."
 python models/model_downloader.py
 echo "Model check/download complete."
+
+# --- Deactivate (Optional but good practice in scripts) ---
+echo "Deactivating environment..."
+# Check if deactivate command exists before running it
+#if command -v deactivate &> /dev/null; then
+#    deactivate
+#else
+#    echo "Warning: 'deactivate' command not found. Skipping deactivation."
+#fi
 
 # --- Completion ---
 echo ""
