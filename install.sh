@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Exit immediately if a command exits with a non-zero status.
+set -e
+
 # --- Configuration ---
 PYTHON_VERSION="3.10.12"
 ENV_NAME="sam-hq"
@@ -48,6 +51,7 @@ else
     echo "Virtual environment '${ENV_NAME}' already exists."
 fi
 
+# --- Activate Environment by Sourcing ---
 ACTIVATE_SCRIPT="${VENV_PATH}/bin/activate"
 if [[ -f "$ACTIVATE_SCRIPT" ]]; then
     echo "Activating environment '${ENV_NAME}' by sourcing ${ACTIVATE_SCRIPT}..."
@@ -65,6 +69,19 @@ else
         exit 1
     fi
 fi
+
+# --- Verification Step ---
+echo "--- Verifying Environment Activation ---"
+echo "which python: $(which python)"
+echo "python version: $(python --version)"
+echo "which pip: $(which pip)"
+echo "VIRTUAL_ENV variable: $VIRTUAL_ENV"
+if [[ -z "$VIRTUAL_ENV" || ! "$VIRTUAL_ENV" == *"$ENV_NAME"* ]]; then
+    echo "Error: Environment does not seem to be activated correctly after sourcing!"
+    # Decide whether to exit or proceed cautiously
+    # exit 1 # Uncomment this line to stop if activation failed
+fi
+echo "--- Verification End ---"
 
 echo "Installing dependencies from requirements.txt (including PyTorch/GPU libraries)..."
 python -m pip install -r requirements.txt
