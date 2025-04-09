@@ -5,3 +5,5 @@ apt-get update && \
 
 pip install -r requirements.txt
 
+pip install -e .
+export PYTHONPATH=$(pwd)
