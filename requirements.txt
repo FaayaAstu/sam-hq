@@ -1,0 +1,15 @@
+# comfy requirements
+torch==2.4.1
+torchvision==0.19.1
+xformers==0.0.28.post1
+transformers>=4.28.1
+safetensors>=0.3.0
+aiohttp
+pyyaml
+Pillow
+scipy
+tqdm
+psutil
+kornia>=0.7.1
+spandrel
+
