@@ -1,26 +1,61 @@
 #!/bin/bash
 
-# Install system dependencies
+# --- Configuration ---
+PYTHON_VERSION="3.10.12"
+ENV_NAME="sam-hq"
+
+# --- Pre-requisites Check ---
+if ! command -v pyenv &> /dev/null
+then
+    echo "Error: pyenv could not be found. Please install pyenv and pyenv-virtualenv."
+    exit 1
+fi
+
+# --- Initialize pyenv for this script session ---
+# Ensures pyenv shims and functions are available for pyenv shell to work
+echo "Initializing pyenv for the script..."
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d "$PYENV_ROOT/bin" ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)" # Needed for virtualenv awareness
+
+# --- Install System Dependencies ---
+# Needed for pyenv Python builds and some package dependencies
+echo "Installing system dependencies..."
 apt-get update && \
-    apt-get install -y --no-install-recommends git wget build-essential libgl1 libglib2.0-0 libsm6 libxext6 libxrender-dev && \
+    apt-get install -y --no-install-recommends git wget build-essential libssl-dev zlib1g-dev \
+    libbz2-dev libreadline-dev libsqlite3-dev curl llvm libncursesw5-dev xz-utils \
+    tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev \
+    libgl1 libglib2.0-0 libsm6 libxext6 libxrender-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# --- Conda Environment Setup ---
-echo "Creating Conda environment 'sam-hq' with Python 3.8..."
-conda create --name sam-hq python=3.10 -y
+# --- pyenv Environment Setup ---
+echo "Checking for Python version ${PYTHON_VERSION}..."
+if ! pyenv versions --bare | grep -q "^${PYTHON_VERSION}$"; then
+    echo "Installing Python ${PYTHON_VERSION} with pyenv..."
+    pyenv install ${PYTHON_VERSION}
+else
+    echo "Python ${PYTHON_VERSION} already installed."
+fi
 
-echo "Activating Conda environment 'sam-hq'..."
-CONDA_BASE=$(conda info --base)
-source $CONDA_BASE/etc/profile.d/conda.sh
-conda activate sam-hq
+echo "Checking for pyenv virtual environment '${ENV_NAME}'..."
+if ! pyenv virtualenvs --bare | grep -q "^${ENV_NAME}$"; then
+    echo "Creating pyenv virtual environment '${ENV_NAME}' using Python ${PYTHON_VERSION}..."
+    pyenv virtualenv ${PYTHON_VERSION} ${ENV_NAME}
+else
+    echo "Virtual environment '${ENV_NAME}' already exists."
+fi
+
+# --- Activate Environment using pyenv shell ---
+echo "Setting pyenv shell to '${ENV_NAME}' for subsequent commands..."
+pyenv shell ${ENV_NAME}
 
 echo "Installing dependencies from requirements.txt (including PyTorch/GPU libraries)..."
 python -m pip install -r requirements.txt
 
 echo "Installing segment-anything-hq package..."
 python -m pip install -e .
-export PYTHONPATH=$(pwd)
 
 echo "Creating pretrained checkpoint directory..."
 mkdir -p pretrained_checkpoint
@@ -29,6 +64,12 @@ echo "Downloading models using downloader script..."
 python models/model_downloader.py
 echo "Model check/download complete."
 
-# conda deactivate # Optional: uncomment if you want to deactivate at the end
-
-echo "Setup complete. To use, activate the environment: conda activate sam-hq"
+# --- Completion ---
+echo ""
+echo "Setup complete using pyenv."
+echo "The environment '${ENV_NAME}' was set for this script session using 'pyenv shell'."
+echo "For future interactive use, activate it with:"
+echo "  pyenv activate ${ENV_NAME}"
+echo "Or set it for the local directory:"
+echo "  pyenv local ${ENV_NAME}"
+echo "(Remember to have 'eval \"\$(pyenv init -)\"' and 'eval \"\$(pyenv virtualenv-init -)\"' in your shell configuration)"
