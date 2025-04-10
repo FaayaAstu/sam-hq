@@ -61,6 +61,7 @@ else
     # Attempt to find the correct path in case the structure changed slightly
     ALT_VENV_PATH=$(pyenv prefix ${ENV_NAME})
     ALT_ACTIVATE_SCRIPT="${ALT_VENV_PATH}/bin/activate"
+    echo "Attempting to find activation script at alternate path: ${ALT_ACTIVATE_SCRIPT}"
     if [[ -f "$ALT_ACTIVATE_SCRIPT" ]]; then
          echo "Found activation script at alternate path: ${ALT_ACTIVATE_SCRIPT}. Sourcing..."
          source "${ALT_ACTIVATE_SCRIPT}"
